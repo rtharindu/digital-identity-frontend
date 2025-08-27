@@ -1,0 +1,65 @@
+{
+  "name": "frontend",
+  "version": "1.0.0",
+  "private": true,
+  "homepage": ".",
+  "scripts": {
+    "start": "react-scripts start",
+    "dev": "react-scripts start",
+    "serve": "npx serve -s build -l 3000",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject",
+    "deploy:simple": "npm start",
+    "deploy:vercel": "vercel --prod",
+    "deploy:vercel:preview": "vercel",
+    "lint": "eslint src --ext .js,.jsx",
+    "lint:fix": "eslint src --ext .js,.jsx --fix",
+    "format": "prettier --write src/**/*.{js,jsx,css,md}",
+    "check:format": "prettier --check src/**/*.{js,jsx,css,md}"
+  },
+  "dependencies": {
+    "@simplewebauthn/browser": "^9.0.0",
+    "@simplewebauthn/server": "^13.1.2",
+    "axios": "^1.11.0",
+    "clsx": "^2.1.1",
+    "lucide-react": "^0.525.0",
+    "react": "^18.0.0",
+    "react-dom": "^18.0.0",
+    "react-router-dom": "^7.7.0",
+    "react-scripts": "^5.0.0"
+  },
+  "devDependencies": {
+    "autoprefixer": "^10.0.0",
+    "postcss": "^8.0.0",
+    "tailwindcss": "^3.0.0"
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  },
+  "engines": {
+    "node": ">=16.0.0",
+    "npm": ">=8.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "your-repository-url"
+  },
+  "keywords": [
+    "digital-identity",
+    "passkeys",
+    "biometric-authentication",
+    "react",
+    "vercel"
+  ],
+  "author": "Your Name",
+  "license": "MIT"
+}

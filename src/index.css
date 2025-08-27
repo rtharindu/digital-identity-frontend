@@ -1,0 +1,425 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+      'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+      sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    background-color: #f9fafb;
+  }
+
+  code {
+    font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+      monospace;
+  }
+
+  /* Enhanced mobile touch targets */
+  @media (max-width: 640px) {
+    button, a {
+      min-height: 44px;
+      min-width: 44px;
+    }
+    
+    input, select, textarea {
+      font-size: 16px; /* Prevents zoom on iOS */
+    }
+  }
+
+  /* Biometric-specific animations */
+  .biometric-pulse {
+    animation: biometric-pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  }
+
+  @keyframes biometric-pulse {
+    0%, 100% {
+      opacity: 1;
+    }
+    50% {
+      opacity: .5;
+    }
+  }
+
+  .biometric-success {
+    animation: biometric-success 0.6s ease-in-out;
+  }
+
+  @keyframes biometric-success {
+    0% {
+      transform: scale(0.8);
+      opacity: 0;
+    }
+    50% {
+      transform: scale(1.1);
+    }
+    100% {
+      transform: scale(1);
+      opacity: 1;
+    }
+  }
+}
+
+@layer components {
+  /* Primary Action Buttons */
+  .btn-primary {
+    @apply bg-slt-blue text-white px-6 py-2 rounded-lg font-medium hover:bg-slt-blue-hover transition-colors focus:ring-2 focus:ring-slt-blue-500 focus:ring-offset-2;
+  }
+
+  .btn-secondary {
+    @apply bg-slt-green text-white px-6 py-2 rounded-lg font-medium hover:bg-slt-green-600 transition-colors focus:ring-2 focus:ring-slt-green-500 focus:ring-offset-2;
+  }
+
+  .btn-danger {
+    @apply bg-red-500 text-white px-6 py-2 rounded-lg font-medium hover:bg-red-600 transition-colors focus:ring-2 focus:ring-red-500 focus:ring-offset-2;
+  }
+
+  /* Status Buttons */
+  .btn-success {
+    @apply bg-green-500 text-white px-6 py-2 rounded-lg font-medium hover:bg-green-600 transition-colors focus:ring-2 focus:ring-green-500 focus:ring-offset-2;
+  }
+
+  .btn-warning {
+    @apply bg-yellow-500 text-white px-6 py-2 rounded-lg font-medium hover:bg-yellow-600 transition-colors focus:ring-2 focus:ring-yellow-500 focus:ring-offset-2;
+  }
+
+  .btn-info {
+    @apply bg-blue-500 text-white px-6 py-2 rounded-lg font-medium hover:bg-blue-600 transition-colors focus:ring-2 focus:ring-blue-500 focus:ring-offset-2;
+  }
+
+  /* Enhanced Mobile Buttons */
+  .btn-mobile {
+    @apply w-full py-3 px-4 text-base font-medium rounded-lg transition-all duration-200;
+  }
+
+  .btn-mobile:active {
+    @apply transform scale-95;
+  }
+
+  /* Form Elements */
+  .input-field {
+    @apply w-full px-4 py-2 border-2 border-gray-300 bg-white text-gray-900 placeholder-gray-400 focus:border-slt-blue focus:ring-2 focus:ring-slt-blue-500 focus:ring-offset-1 outline-none transition-colors rounded-lg;
+  }
+
+  .input-field-error {
+    @apply w-full px-4 py-2 border-2 border-red-300 bg-red-50 text-gray-900 placeholder-gray-400 focus:border-red-500 focus:ring-2 focus:ring-red-500 focus:ring-offset-1 outline-none transition-colors rounded-lg;
+  }
+
+  /* Mobile-optimized form fields */
+  .input-field-mobile {
+    @apply input-field py-3 text-base;
+  }
+
+  /* Cards and Containers */
+  .card {
+    @apply bg-white rounded-lg shadow-lg p-6 border border-gray-200;
+  }
+
+  .card-elevated {
+    @apply bg-white rounded-lg shadow-xl p-6 border border-gray-200 hover:shadow-2xl transition-shadow;
+  }
+
+  /* Mobile-optimized cards */
+  .card-mobile {
+    @apply card p-4 md:p-6;
+  }
+
+  /* Navigation */
+  .nav-link {
+    @apply text-white hover:text-slt-blue-200 transition-colors;
+  }
+
+  .nav-link-active {
+    @apply text-white border-b-2 border-slt-blue-200 bg-slt-blue-800;
+  }
+
+  /* Status Messages */
+  .message-success {
+    @apply bg-green-50 border border-green-200 text-green-800 px-4 py-3 rounded-lg;
+  }
+
+  .message-error {
+    @apply bg-red-50 border border-red-200 text-red-800 px-4 py-3 rounded-lg;
+  }
+
+  .message-warning {
+    @apply bg-yellow-50 border border-yellow-200 text-yellow-800 px-4 py-3 rounded-lg;
+  }
+
+  .message-info {
+    @apply bg-blue-50 border border-blue-200 text-blue-800 px-4 py-3 rounded-lg;
+  }
+
+  /* Auth Pages Background */
+  .auth-background {
+    @apply bg-slt-gradient min-h-screen;
+  }
+
+  /* Biometric-specific components */
+  .biometric-card {
+    @apply bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-lg p-4 md:p-6;
+  }
+
+  .biometric-status {
+    @apply flex items-center justify-between p-3 bg-white rounded-lg border border-blue-100;
+  }
+
+  .biometric-type-badge {
+    @apply flex items-center bg-green-50 text-green-700 px-3 py-2 rounded-full text-sm font-medium;
+  }
+
+  .biometric-icon {
+    @apply w-5 h-5 mr-2;
+  }
+
+  /* Mobile-optimized grid layouts */
+  .grid-mobile {
+    @apply grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3;
+  }
+
+  .grid-mobile-2 {
+    @apply grid grid-cols-1 md:grid-cols-2 gap-4;
+  }
+
+  /* Responsive spacing utilities */
+  .space-mobile {
+    @apply space-y-4 md:space-y-6;
+  }
+
+  .p-mobile {
+    @apply p-4 md:p-6;
+  }
+
+  .px-mobile {
+    @apply px-4 md:px-6;
+  }
+
+  .py-mobile {
+    @apply py-4 md:py-6;
+  }
+
+  /* Table Styles */
+  .table-header {
+    @apply bg-gray-50 text-gray-700 font-semibold px-6 py-3 text-left text-sm uppercase tracking-wider;
+  }
+
+  /* Mobile-optimized tables */
+  .table-mobile {
+    @apply w-full overflow-x-auto;
+  }
+
+  .table-mobile th,
+  .table-mobile td {
+    @apply px-3 py-2 text-sm;
+  }
+
+  /* Focus ring utilities */
+  .focus-ring {
+    @apply focus:outline-none focus:ring-2 focus:ring-offset-2;
+  }
+
+  .focus-ring-blue {
+    @apply focus-ring focus:ring-slt-blue-500;
+  }
+
+  .focus-ring-green {
+    @apply focus-ring focus:ring-slt-green-500;
+  }
+
+  /* Loading states */
+  .loading-spinner {
+    @apply animate-spin rounded-full border-2 border-gray-300 border-t-current;
+  }
+
+  .loading-spinner-sm {
+    @apply loading-spinner h-4 w-4;
+  }
+
+  .loading-spinner-md {
+    @apply loading-spinner h-6 w-6;
+  }
+
+  .loading-spinner-lg {
+    @apply loading-spinner h-8 w-8;
+  }
+
+  /* Responsive text utilities */
+  .text-responsive-sm {
+    @apply text-sm md:text-base;
+  }
+
+  .text-responsive-base {
+    @apply text-base md:text-lg;
+  }
+
+  .text-responsive-lg {
+    @apply text-lg md:text-xl;
+  }
+
+  .text-responsive-xl {
+    @apply text-xl md:text-2xl;
+  }
+
+  .text-responsive-2xl {
+    @apply text-2xl md:text-3xl;
+  }
+
+  .text-responsive-3xl {
+    @apply text-3xl md:text-4xl;
+  }
+
+  /* Mobile-first responsive utilities */
+  .hidden-mobile {
+    @apply hidden sm:block;
+  }
+
+  .block-mobile {
+    @apply block sm:hidden;
+  }
+
+  .flex-mobile {
+    @apply flex flex-col sm:flex-row;
+  }
+
+  .items-mobile {
+    @apply items-start sm:items-center;
+  }
+
+  .justify-mobile {
+    @apply justify-start sm:justify-between;
+  }
+
+  /* Touch-friendly interactive elements */
+  .touch-target {
+    @apply min-h-[44px] min-w-[44px];
+  }
+
+  .touch-friendly {
+    @apply touch-target flex items-center justify-center;
+  }
+
+  /* Biometric authentication specific styles */
+  .passkey-button {
+    @apply w-full bg-slt-green text-white px-6 py-3 rounded-lg font-medium hover:bg-slt-green-600 transition-all duration-200 focus-ring-green disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+
+  .passkey-button:active:not(:disabled) {
+    @apply transform scale-95;
+  }
+
+  .biometric-indicator {
+    @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium;
+  }
+
+  .biometric-indicator-fingerprint {
+    @apply biometric-indicator bg-blue-100 text-blue-800;
+  }
+
+  .biometric-indicator-face {
+    @apply biometric-indicator bg-green-100 text-green-800;
+  }
+
+  .biometric-indicator-iris {
+    @apply biometric-indicator bg-purple-100 text-purple-800;
+  }
+}
+
+@layer utilities {
+  /* Custom scrollbar for mobile */
+  .scrollbar-mobile {
+    scrollbar-width: thin;
+    scrollbar-color: #cbd5e0 #f7fafc;
+  }
+
+  .scrollbar-mobile::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  .scrollbar-mobile::-webkit-scrollbar-track {
+    background: #f7fafc;
+  }
+
+  .scrollbar-mobile::-webkit-scrollbar-thumb {
+    background: #cbd5e0;
+    border-radius: 3px;
+  }
+
+  .scrollbar-mobile::-webkit-scrollbar-thumb:hover {
+    background: #a0aec0;
+  }
+
+  /* Safe area utilities for mobile devices */
+  .safe-top {
+    padding-top: env(safe-area-inset-top);
+  }
+
+  .safe-bottom {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+
+  .safe-left {
+    padding-left: env(safe-area-inset-left);
+  }
+
+  .safe-right {
+    padding-right: env(safe-area-inset-right);
+  }
+
+  /* Mobile-specific animations */
+  .slide-up-mobile {
+    animation: slide-up-mobile 0.3s ease-out;
+  }
+
+  @keyframes slide-up-mobile {
+    from {
+      transform: translateY(100%);
+      opacity: 0;
+    }
+    to {
+      transform: translateY(0);
+      opacity: 1;
+    }
+  }
+
+  .fade-in-mobile {
+    animation: fade-in-mobile 0.2s ease-in;
+  }
+
+  @keyframes fade-in-mobile {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+}
+
+/* Custom CSS Variables for advanced usage */
+:root {
+  /* Brand Colors */
+  --color-primary: #0072CE;
+  --color-primary-hover: #005bb5;
+  --color-secondary: #4CAF50;
+  
+  /* Status Colors */
+  --color-success: #22c55e;
+  --color-error: #ef4444;
+  --color-warning: #f59e0b;
+  --color-info: #3b82f6;
+  
+  /* Neutral Colors */
+  --color-gray-50: #f9fafb;
+  --color-gray-100: #f3f4f6;
+  --color-gray-200: #e5e7eb;
+  --color-gray-300: #d1d5db;
+  --color-gray-400: #9ca3af;
+  --color-gray-500: #6b7280;
+  --color-gray-600: #4b5563;
+  --color-gray-700: #374151;
+  --color-gray-800: #1f2937;
+  --color-gray-900: #111827;
+} 
