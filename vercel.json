@@ -41,14 +41,6 @@
       ]
     }
   ],
-  "env": {
-    "REACT_APP_API_BASE_URL": "@api_base_url",
-    "REACT_APP_ENABLE_PASSKEYS": "@enable_passkeys",
-    "REACT_APP_ENABLE_BIOMETRICS": "@enable_biometrics",
-    "REACT_APP_RP_ID": "@rp_id",
-    "REACT_APP_RP_NAME": "@rp_name",
-    "REACT_APP_FRONTEND_URL": "@frontend_url"
-  },
   "rewrites": [
     {
       "source": "/static/(.*)",
