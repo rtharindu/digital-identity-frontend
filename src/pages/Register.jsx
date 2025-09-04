@@ -3,6 +3,169 @@ import { Link, useNavigate } from 'react-router-dom';
 import { Eye, EyeOff, User, Mail, Lock, Phone } from 'lucide-react';
 import { getApiBaseUrl } from '../utils/config';
 
+// Validation rules
+const validationRules = {
+  fullName: {
+    required: true,
+    minLength: 2,
+    maxLength: 50,
+    pattern: /^[A-Za-z\s]+$/,
+    messages: {
+      required: 'Full name is required',
+      minLength: 'Full name must be at least 2 characters',
+      pattern: 'Full name can contain only letters and spaces'
+    }
+  },
+  email: {
+    required: true,
+    pattern: /^[^@\s]+@[^@\s]+\.[^@\s]+$/,
+    messages: {
+      required: 'Email is required',
+      pattern: 'Invalid email address'
+    }
+  },
+  phone: {
+    required: true,
+    pattern: /^\d{10}$/,
+    messages: {
+      required: 'Phone number is required',
+      pattern: 'Phone number must be exactly 10 digits'
+    }
+  },
+  password: {
+    required: true,
+    minLength: 8,
+    messages: {
+      required: 'Password is required',
+      minLength: 'Password must be at least 8 characters'
+    }
+  },
+  confirmPassword: {
+    required: true,
+    messages: {
+      required: 'Please confirm your password',
+      mismatch: 'Passwords do not match'
+    }
+  },
+  agreeToTerms: {
+    required: true,
+    messages: {
+      required: 'You must agree to the Terms & Conditions'
+    }
+  }
+};
+
+// Validation helper functions
+const validateField = (fieldName, value, formData = {}) => {
+  const rule = validationRules[fieldName];
+  if (!rule) return '';
+
+  if (rule.required && !value) {
+    return rule.messages.required;
+  }
+
+  if (rule.minLength && value.length < rule.minLength) {
+    return rule.messages.minLength;
+  }
+
+  if (rule.pattern && !rule.pattern.test(value)) {
+    return rule.messages.pattern;
+  }
+
+  if (fieldName === 'confirmPassword' && value !== formData.password) {
+    return rule.messages.mismatch;
+  }
+
+  return '';
+};
+
+const validateForm = (formData) => {
+  const errors = {};
+  Object.keys(validationRules).forEach(fieldName => {
+    const error = validateField(fieldName, formData[fieldName], formData);
+    if (error) {
+      errors[fieldName] = error;
+    }
+  });
+  return errors;
+};
+
+// Form field component
+const FormField = ({ 
+  icon: Icon, 
+  type, 
+  name, 
+  value, 
+  onChange, 
+  placeholder, 
+  error, 
+  required = false,
+  pattern,
+  maxLength,
+  inputMode,
+  autoComplete,
+  children 
+}) => (
+  <div className="relative">
+    <Icon className="absolute left-3 top-3 h-5 w-5 text-gray-400" />
+    <input
+      type={type}
+      name={name}
+      value={value}
+      onChange={onChange}
+      placeholder={placeholder}
+      className={`input-field pl-10 ${error ? 'border-red-500' : ''}`}
+      required={required}
+      aria-invalid={!!error}
+      aria-describedby={error ? `${name}-error` : undefined}
+      pattern={pattern}
+      maxLength={maxLength}
+      inputMode={inputMode}
+      autoComplete={autoComplete}
+    />
+    {children}
+    {error && (
+      <span id={`${name}-error`} className="text-red-500 text-xs absolute left-0 -bottom-5">
+        {error}
+      </span>
+    )}
+  </div>
+);
+
+// Password field component
+const PasswordField = ({ 
+  name, 
+  value, 
+  onChange, 
+  placeholder, 
+  error, 
+  showPassword, 
+  onTogglePassword,
+  autoComplete 
+}) => (
+  <FormField
+    icon={Lock}
+    type={showPassword ? 'text' : 'password'}
+    name={name}
+    value={value}
+    onChange={onChange}
+    placeholder={placeholder}
+    error={error}
+    required
+    autoComplete={autoComplete}
+  >
+    <button
+      type="button"
+      onClick={onTogglePassword}
+      className="absolute right-3 top-3 text-gray-400 hover:text-gray-600 transition-colors"
+      tabIndex={-1}
+      aria-label={showPassword ? 'Hide password' : 'Show password'}
+    >
+      {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+    </button>
+  </FormField>
+);
+
 const Register = () => {
   const [formData, setFormData] = useState({
     fullName: '',
@@ -27,56 +190,49 @@ const Register = () => {
     }));
   };
 
-  const validate = () => {
-    const errors = {};
-    if (!formData.fullName.trim()) errors.fullName = 'Full name is required';
-    if (!formData.email) errors.email = 'Email is required';
-    else if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(formData.email)) errors.email = 'Invalid email address';
-    if (!formData.phone) errors.phone = 'Phone number is required';
-    else if (!/^\+?\d{7,15}$/.test(formData.phone)) errors.phone = 'Invalid phone number';
-    if (!formData.password) errors.password = 'Password is required';
-    else if (formData.password.length < 8) errors.password = 'Password must be at least 8 characters';
-    if (!formData.confirmPassword) errors.confirmPassword = 'Please confirm your password';
-    else if (formData.password !== formData.confirmPassword) errors.confirmPassword = 'Passwords do not match';
-    if (!formData.agreeToTerms) errors.agreeToTerms = 'You must agree to the Terms & Conditions';
-    return errors;
-  };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const errors = validate();
+    const errors = validateForm(formData);
     setFormErrors(errors);
+    
     if (Object.keys(errors).length > 0) return;
+    
     setLoading(true);
     setError("");
-    console.log('[Register] Submitting form data:', formData);
+    
     try {
-      const res = await fetch(`${getApiBaseUrl()}/auth/user/register`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          fullName: formData.fullName,
-          email: formData.email,
-          phone: formData.phone,
-          password: formData.password
-        })
-      });
-      console.log('[Register] API response status:', res.status);
-      if (!res.ok) {
-        const data = await res.json();
-        setError(data.message || "Registration failed");
-        setLoading(false);
-        console.error('[Register] Registration failed:', data);
-        return;
+      const response = await submitRegistration(formData);
+      if (response.success) {
+        navigate('/login');
+      } else {
+        setError(response.message);
       }
-      console.log('[Register] Registration successful');
-      navigate('/login');
     } catch (err) {
       setError("Registration failed. Please try again later.");
-      setLoading(false);
       console.error('[Register] Network or server error:', err);
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
+  };
+
+  const submitRegistration = async (data) => {
+    const res = await fetch(`${getApiBaseUrl()}/auth/user/register`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        fullName: data.fullName,
+        email: data.email,
+        phone: data.phone,
+        password: data.password
+      })
+    });
+
+    if (!res.ok) {
+      const errorData = await res.json();
+      return { success: false, message: errorData.message || "Registration failed" };
+    }
+
+    return { success: true };
   };
 
   return (
@@ -87,110 +243,73 @@ const Register = () => {
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-6" noValidate>
-          {/* Error Message */}
-          {error && <div className="message-error text-sm text-center" role="alert">{error}</div>}
-          {/* Full Name Input */}
-          <div className="relative">
-            <User className="absolute left-3 top-3 h-5 w-5 text-gray-400" />
-            <input
-              type="text"
-              name="fullName"
-              value={formData.fullName}
-              onChange={handleInputChange}
-              placeholder="Full Name"
-              className={`input-field pl-10 ${formErrors.fullName ? 'border-red-500' : ''}`}
-              required
-              aria-invalid={!!formErrors.fullName}
-              aria-describedby={formErrors.fullName ? 'fullName-error' : undefined}
-            />
-            {formErrors.fullName && <span id="fullName-error" className="text-red-500 text-xs absolute left-0 -bottom-5">{formErrors.fullName}</span>}
-          </div>
-          {/* Email Input */}
-          <div className="relative">
-            <Mail className="absolute left-3 top-3 h-5 w-5 text-gray-400" />
-            <input
-              type="email"
-              name="email"
-              value={formData.email}
-              onChange={handleInputChange}
-              placeholder="Email"
-              className={`input-field pl-10 ${formErrors.email ? 'border-red-500' : ''}`}
-              required
-              aria-invalid={!!formErrors.email}
-              aria-describedby={formErrors.email ? 'email-error' : undefined}
-              autoComplete="email"
-            />
-            {formErrors.email && <span id="email-error" className="text-red-500 text-xs absolute left-0 -bottom-5">{formErrors.email}</span>}
-          </div>
-          {/* Phone Input */}
-          <div className="relative">
-            <Phone className="absolute left-3 top-3 h-5 w-5 text-gray-400" />
-            <input
-              type="tel"
-              name="phone"
-              value={formData.phone}
-              onChange={handleInputChange}
-              placeholder="Phone Number"
-              className={`input-field pl-10 ${formErrors.phone ? 'border-red-500' : ''}`}
-              required
-              aria-invalid={!!formErrors.phone}
-              aria-describedby={formErrors.phone ? 'phone-error' : undefined}
-            />
-            {formErrors.phone && <span id="phone-error" className="text-red-500 text-xs absolute left-0 -bottom-5">{formErrors.phone}</span>}
-          </div>
-          {/* Password Input */}
-          <div className="relative">
-            <Lock className="absolute left-3 top-3 h-5 w-5 text-gray-400" />
-            <input
-              type={showPassword ? 'text' : 'password'}
-              name="password"
-              value={formData.password}
-              onChange={handleInputChange}
-              placeholder="Password"
-              className={`input-field pl-10 pr-10 ${formErrors.password ? 'border-red-500' : ''}`}
-              required
-              aria-invalid={!!formErrors.password}
-              aria-describedby={formErrors.password ? 'password-error' : undefined}
-              autoComplete="new-password"
-            />
-            <button
-              type="button"
-              onClick={() => setShowPassword(!showPassword)}
-              className="absolute right-3 top-3 text-gray-400 hover:text-gray-600 transition-colors"
-              tabIndex={-1}
-              aria-label={showPassword ? 'Hide password' : 'Show password'}
-            >
-              {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
-            </button>
-            {formErrors.password && <span id="password-error" className="text-red-600 text-xs absolute left-0 -bottom-5">{formErrors.password}</span>}
-          </div>
-          {/* Confirm Password Input */}
-          <div className="relative">
-            <Lock className="absolute left-3 top-3 h-5 w-5 text-gray-400" />
-            <input
-              type={showConfirmPassword ? 'text' : 'password'}
-              name="confirmPassword"
-              value={formData.confirmPassword}
-              onChange={handleInputChange}
-              placeholder="Confirm Password"
-              className={`input-field pl-10 pr-10 ${formErrors.confirmPassword ? 'border-red-500' : ''}`}
-              required
-              aria-invalid={!!formErrors.confirmPassword}
-              aria-describedby={formErrors.confirmPassword ? 'confirmPassword-error' : undefined}
-              autoComplete="new-password"
-            />
-            <button
-              type="button"
-              onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-              className="absolute right-3 top-3 text-gray-400 hover:text-gray-600 transition-colors"
-              tabIndex={-1}
-              aria-label={showConfirmPassword ? 'Hide confirm password' : 'Show confirm password'}
-            >
-              {showConfirmPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
-            </button>
-            {formErrors.confirmPassword && <span id="confirmPassword-error" className="text-red-600 text-xs absolute left-0 -bottom-5">{formErrors.confirmPassword}</span>}
-          </div>
-          {/* Terms Agreement Checkbox */}
+          {error && (
+            <div className="message-error text-sm text-center" role="alert">
+              {error}
+            </div>
+          )}
+
+          <FormField
+            icon={User}
+            type="text"
+            name="fullName"
+            value={formData.fullName}
+            onChange={handleInputChange}
+            placeholder="Full Name"
+            error={formErrors.fullName}
+            required
+            pattern="^[A-Za-z\s]{2,}$"
+            maxLength={50}
+          />
+
+          <FormField
+            icon={Mail}
+            type="email"
+            name="email"
+            value={formData.email}
+            onChange={handleInputChange}
+            placeholder="Email"
+            error={formErrors.email}
+            required
+            autoComplete="email"
+          />
+
+          <FormField
+            icon={Phone}
+            type="tel"
+            name="phone"
+            value={formData.phone}
+            onChange={handleInputChange}
+            placeholder="Phone Number"
+            error={formErrors.phone}
+            required
+            inputMode="numeric"
+            pattern="^\d{10}$"
+            maxLength={10}
+          />
+
+          <PasswordField
+            name="password"
+            value={formData.password}
+            onChange={handleInputChange}
+            placeholder="Password"
+            error={formErrors.password}
+            showPassword={showPassword}
+            onTogglePassword={() => setShowPassword(!showPassword)}
+            autoComplete="new-password"
+          />
+
+          <PasswordField
+            name="confirmPassword"
+            value={formData.confirmPassword}
+            onChange={handleInputChange}
+            placeholder="Confirm Password"
+            error={formErrors.confirmPassword}
+            showPassword={showConfirmPassword}
+            onTogglePassword={() => setShowConfirmPassword(!showConfirmPassword)}
+            autoComplete="new-password"
+          />
+
           <div className="flex items-start">
             <input
               type="checkbox"
@@ -210,24 +329,28 @@ const Register = () => {
                 Terms & Conditions
               </Link>
             </label>
-            {formErrors.agreeToTerms && <span id="agreeToTerms-error" className="text-red-600 text-xs ml-2">{formErrors.agreeToTerms}</span>}
+            {formErrors.agreeToTerms && (
+              <span id="agreeToTerms-error" className="text-red-600 text-xs ml-2">
+                {formErrors.agreeToTerms}
+              </span>
+            )}
           </div>
-          {/* Register Button */}
+
           <button
             type="submit"
             className="btn-secondary w-full flex items-center justify-center"
             disabled={loading}
             aria-busy={loading}
           >
-            {loading ? (
+            {loading && (
               <svg className="animate-spin h-5 w-5 mr-2 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                 <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                 <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"></path>
               </svg>
-            ) : null}
+            )}
             Register
           </button>
-          {/* Login Link */}
+
           <div className="text-center">
             <div className="text-slt-blue">
               Already have an account?{' '}
